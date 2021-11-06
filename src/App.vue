@@ -1,12 +1,18 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <div id="restaurant-forum">
     <router-view/>
   </div>
 </template>
+
+<script>
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap'
+
+export default {
+  name: 'App'
+}
+</script>
+
 
 <style>
 #app {
