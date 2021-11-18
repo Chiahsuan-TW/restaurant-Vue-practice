@@ -17,7 +17,7 @@
           <li><strong>{{profile.Followers.length}}</strong> followers (追隨者)</li>
         </ul>
         <form action="/following/41" method="POST" style="display: contents;">
-          <button v-if="currentUser.isAdmin" type="submit" class="btn btn-primary">Edit</button>
+          <router-link :to="{name: 'user-edit', params: {id: currentUser.id}}" v-if="currentUser.isAdmin"><button  type="submit" class="btn btn-primary">Edit</button></router-link>
           <div v-else class="follow">
             <button v-if="followed" @click.stop.prevent="unfollow" type="submit" class="btn btn-danger">取消追蹤</button>
             <button v-else @click.stop.prevent="follow" type="submit" class="btn btn-primary">追蹤</button>
