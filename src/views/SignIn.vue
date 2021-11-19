@@ -1,6 +1,6 @@
 <template>
   <div class="container py-5">
-    <form class="w-100">
+    <form class="w-100" @submit.prevent="handleSubmit">
       <div class="text-center mb-4">
         <h1 class="h3 mb-3 font-weight-normal">
           Sign In
@@ -39,7 +39,6 @@
       <button
         class="btn btn-lg btn-primary btn-block mb-3"
         type="submit"
-        @click.prevent = "handleSubmit"
       >
         Submit
       </button>
@@ -58,6 +57,9 @@
 </template>
 
 <script>
+import authorizationAPI from './../apis/authorization'
+import {Toast} from './../utils/helpers'
+
 export default {
   data() {
     return {
@@ -66,12 +68,38 @@ export default {
     }
   },
   methods: {
-    handleSubmit() {
-      return JSON.stringify({
-        email: this.email,
-        password: this.password
-      })
-    }
+    async handleSubmit() {
+      try {
+        if(!this.email || !this.password) {
+          Toast.fire({
+              icon: 'error',
+              title: '請輸入帳號密碼'
+          })
+          return
+        }
+        
+        const response = await authorizationAPI.signIn({
+          email: this.email,
+          password: this.password
+        })
+  
+        const {data} = response
+  
+        if(data.status !== 'success') {
+            throw new Error(data.message)
+          }
+          localStorage.setItem('token', data.token)
+          this.$router.push('/restaurants')
+
+      } 
+      catch(error) {
+          console.log(error)
+          Toast.fire({
+              icon: 'warning',
+              title: '請輸入正確的帳號密碼'
+            })
+        }   
+      }
   }
 }
 </script>
