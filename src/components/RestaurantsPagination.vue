@@ -6,7 +6,7 @@
         <router-link
           :class="['page-link', {disabled: currentPage === 1}]"
           aria-label="Previous"
-          :to="{name: 'Restaurant', query: {page: previousPage, categoryId}}"
+          :to="{name: 'restaurants', query: {categoryId, page: previousPage}}"
         >
           <span aria-hidden="true">&laquo;</span>
         </router-link>
@@ -15,7 +15,7 @@
       <li v-for="page in totalPage" :key="page" :class="['page-item', {active: page === currentPage}]">
         <router-link
           class="page-link"
-          :to="{name: 'Restaurant', query: { page: page, categoryId}}"
+          :to="{name: 'restaurants', query: { categoryId, page}}"
         >
           {{page}}
         </router-link>
@@ -27,7 +27,7 @@
         <router-link
           :class="['page-link', {disabled: currentPage === totalPage.length}]"
           aria-label="Next"
-          :to="{name: 'Restaurant', query: { page: nextPage, categoryId}}"
+          :to="{name: 'restaurants', query: { categoryId, page: nextPage}}"
         >
           <span aria-hidden="true">&raquo;</span>
         </router-link>
