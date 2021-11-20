@@ -2,19 +2,19 @@
   <div :key="user.id" class="col-3">
     <a href="#">
       <img
-        src="http://via.placeholder.com/300x300?text=No+Image"
+        :src="user.image"
         width="140px"
         height="140px"
       >
     </a>
     <h2>{{user.name}}</h2>
-    <span class="badge bg-secondary">追蹤人數：{{user.FollowerCount}}</span>
+    <span class="badge bg-secondary">追蹤人數：{{user.followerCount}}</span>
     <p class="mt-3">
       <button
         v-if="user.isFollowed"
         type="button"
         class="btn btn-danger"
-        @click="removeFollow"
+        @click="clickUnfollow(user.id)"
       >
         取消追蹤
       </button>
@@ -22,7 +22,7 @@
         v-else
         type="button"
         class="btn btn-primary"
-        @click="addFollow"
+        @click="clickFollow(user.id)"
       >
         追蹤
       </button>
@@ -45,18 +45,12 @@ export default {
     }
   },
   methods: {
-    addFollow() {
-      this.user = {
-        ...this.initialUser,
-        isFollowed: true
-      }
+    clickFollow(userId) {
+      this.$emit('click-follow', userId)
     },
-    removeFollow() {
-      this.user = {
-        ...this.initialUser,
-        isFollowed: false
-      }
+    clickUnfollow(userId) {
+      this.$emit('click-unfollow', userId)
     }
-  }
+  },
 }
 </script>
