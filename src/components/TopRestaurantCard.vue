@@ -27,14 +27,18 @@
             >Show</router-link>
 
             <button
+              v-if="topRestaurant.isFavorited"
               type="button"
               class="btn btn-danger mr-2"
+              @click="deleteFavorite(topRestaurant.id)"
             >
               移除最愛
             </button>
             <button
+              v-else
               type="button"
               class="btn btn-primary"
+              @click="addFavorite(topRestaurant.id)"
             >
               加到最愛
             </button>
@@ -51,6 +55,14 @@ export default {
     topRestaurant: {
       type: Object,
       required: true,
+    }
+  },
+  methods: {
+    addFavorite(restaurantId) {
+      this.$emit('add-favorite', restaurantId)
+    },
+    deleteFavorite(restaurantId) {
+      this.$emit('delete-favorite', restaurantId)
     }
   }
 }
