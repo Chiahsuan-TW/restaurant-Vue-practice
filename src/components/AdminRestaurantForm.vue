@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit">
+  <form @submit.prevent="handleSubmit" v-show="!isLoading">
     <div class="form-group">
       <label for="name">Name</label>
       <input
@@ -109,8 +109,9 @@
     <button
       type="submit"
       class="btn btn-primary"
+      :disabled="isProcessing"
     >
-      送出
+      {{isProcessing ? "處理中": "送出"}}
     </button>
   </form>
 </template>
@@ -118,35 +119,9 @@
 
 
 <script>
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: '中式料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 2,
-      name: '日本料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 3,
-      name: '義大利料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 4,
-      name: '墨西哥料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    }
-  ]
-}
 
 export default {
   name: "AdminRestaurantForm",
@@ -162,6 +137,10 @@ export default {
         image: '',
         openingHours: ''
       })
+    },
+    isProcessing: {
+      type: Boolean,
+      required: true,
     }
   },
   data() {
@@ -176,11 +155,20 @@ export default {
         openingHours: ''
       },
       categories: [],
+      isLoading: true,
     }
   },
   methods: {
-    fetchCategories() {
-    this.categories = dummyData.categories
+    async fetchCategories() {
+      try {
+        const { data } = await adminAPI.categories.get()
+        this.categories = data.categories
+        this.isLoading = false
+
+      } catch(error) {
+        console.log(error)
+        this.isLoading = false
+      }
     },
     handleUpload(e) {
       const { files } = e.target
@@ -194,6 +182,20 @@ export default {
       }
     },
     handleSubmit(e) {
+      if (!this.restaurant.name) {
+        Toast.fire({
+          icon: 'warning',
+          title: '請填寫餐廳名稱'
+        })
+        return
+      } else if (!this.restaurant.categoryId) {
+        Toast.fire({
+          icon: 'warning',
+          title: '請選擇餐廳類別'
+        })
+        return
+      }
+
       const form = e.target
       const formData = new FormData(form)
       this.$emit('click-submit', formData)
