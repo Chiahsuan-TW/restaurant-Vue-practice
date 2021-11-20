@@ -2,7 +2,7 @@
  <div class="container py-5">
     <!-- 餐廳表單 AdminRestaurantForm -->
     <h1>餐廳表單 </h1>
-    <AdminRestaurantForm @click-submit="handleSubmit" :is-processing="isProcessing" />
+    <AdminRestaurantForm :is-processing="isProcessing" @click-submit="handleSubmit"/>
   </div>
 </template>
 

@@ -2,40 +2,22 @@
  <div class="container py-5">
     <!-- 餐廳表單 AdminRestaurantForm -->
     <h1>餐廳表單-編輯模式 </h1>
-    <AdminRestaurantForm @click-submit="handleSubmit" :initial-restaurant="restaurant"/>
+    <AdminRestaurantForm @click-submit="handleSubmit" :initial-restaurant="restaurant" :is-processing="isProcessing"/>
   </div>
 </template>
 
 <script>
 import AdminRestaurantForm from "./../components/AdminRestaurantForm"
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
-const dummyData = {
-  'restaurant': {
-    'id': 1,
-    'name': 'Laurence Reynolds',
-    'tel': '1-657-067-3756 x9782',
-    'address': '187 Kirlin Squares',
-    'opening_hours': '08:00',
-    'description': 'sit est mollitia',
-    'image': 'https://loremflickr.com/320/240/restaurant,food/?random=91.29816290184887',
-    'viewCounts': 1,
-    'createdAt': '2019-07-30T16:24:55.432Z',
-    'updatedAt': '2019-07-30T17:26:43.260Z',
-    'CategoryId': 3,
-    'Category': {
-      'id': 3,
-      'name': '義大利料理',
-      'createdAt': '2019-07-30T16:24:55.429Z',
-      'updatedAt': '2019-07-30T16:24:55.429Z'
-    }
-  }
-}
 
 export default {
   name: "AdminRestaurantEdit",
   data() {
     return {
       restaurant: {
+        id: -1,
         name: '',
         categoryId: '',
         tel: '',
@@ -45,22 +27,38 @@ export default {
         openingHours: ''
       },
       categories: [],
+      isProcessing: false
     }
   },
   components: {
     AdminRestaurantForm,
   },
   methods: {
-    handleSubmit() {
-      for(let [name, value] of FormData.entries()) {
-        console.log(name, ":" ,value)
+    async handleSubmit(formData) {
+      try {
+        this.isProcessing = true
+        const { id } = this.$route.params
+        const { data } = await adminAPI.restaurants.update(id, formData)
+        if(data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        this.$router.push({name: 'admin-restaurants'})
+
+      } catch(error) {
+        this.isProcessing = false
+        Toast.fire({
+          icon: 'error',
+          title: '無法修改資料，請稍後再試'
+        })
       }
     },
-    fetchRestaurant(restaurantId) {
-      const restaurant = dummyData.restaurant
-      const { name, CategoryId: categoryId, tel, address, description, image, opening_hours: openingHours} = restaurant
-      this.restaurant = {
-        ...restaurant,
+    async fetchRestaurant(restaurantId) {
+      try {
+        const { data } = await adminAPI.restaurants.getDetail(restaurantId)
+        const { id, name, CategoryId: categoryId, tel, address, description, image, opening_hours: openingHours} = data.restaurant
+        this.restaurant = {
+        id,
         name,
         categoryId,
         tel,
@@ -69,11 +67,19 @@ export default {
         image,
         openingHours
       }
+      } catch(error) {
+        console.log(error)
+      }
     },
   },
   created() {
       const { id } = this.$route.params
       this.fetchRestaurant(id)
-    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { id } = to.params
+    this.fetchRestaurant(id)
+    next()
+  }
 }
 </script>

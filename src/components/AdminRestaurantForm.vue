@@ -140,7 +140,7 @@ export default {
     },
     isProcessing: {
       type: Boolean,
-      required: true,
+      default: false,
     }
   },
   data() {
@@ -207,6 +207,14 @@ export default {
       ...this.restaurant,
       ...this.initialRestaurant,
 
+    }
+  },
+  watch: {
+    initialRestaurant(newValue) {
+      this.restaurant = {
+        ...this.restaurant,
+        ...newValue
+      }
     }
   }
 }
