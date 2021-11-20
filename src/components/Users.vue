@@ -52,5 +52,13 @@ export default {
       this.$emit('click-unfollow', userId)
     }
   },
+  watch: {
+    initialUser: {
+      handler: function(){
+        this.user = this.initialUser
+      }
+    },
+    deep: true
+  }
 }
 </script>

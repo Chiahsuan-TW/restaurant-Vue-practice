@@ -43,7 +43,6 @@ export default {
                 isFollowed: user.isFollowed
             }
           })
-          console.log(data.users)
 
       } catch(error) {
         console.log(error)
@@ -57,7 +56,6 @@ export default {
           if(data.status !== 'success') {
             throw new Error(data.message)
           }
-
           this.users = this.users.map(user => {
             if (user.id === userId) {
               return {
