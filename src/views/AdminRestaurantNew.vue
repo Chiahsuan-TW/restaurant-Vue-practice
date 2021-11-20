@@ -31,7 +31,7 @@ export default {
         if(data.status !== 'success') {
           throw new Error(data.message)
         }
-        this.$route.push({name: 'admin-restaurants'})
+        this.$router.push({name: 'admin-restaurants'})
       } catch(error) {
         this.isProcessing = false
         Toast.fire({
