@@ -85,7 +85,7 @@
             v-show="category.isEditing"
             type="submit"
             class="btn btn-link mr-2"
-            @click.stop.prevent="updateCategory({categoryId:category.id, name: category.name})"
+            @click.stop.prevent="updateCategory({categoryId:category.id, categoryName: category.name})"
           >
             Save
           </button>
@@ -202,10 +202,10 @@ export default {
         }
       })
     },
-    async updateCategory({categoryId, name}) {
+    async updateCategory({categoryId, categoryName}) {
       //TODO: 更新資料
       try {
-        const { data } = await adminAPI.categories.update({categoryId, name})
+        const { data } = await adminAPI.categories.update({categoryId, categoryName})
         
         console.log(data)
       } catch(error) {

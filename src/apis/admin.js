@@ -18,8 +18,8 @@ export default {
         headers: {Authorization: `Bearer ${getToken()}`}
       })
     },
-    update({categoryId, name}) {
-      return apiHelper.put(`/admin/categories/${categoryId}`, {name}, {
+    update({categoryId, categoryName}) {
+      return apiHelper.put(`/admin/categories/${categoryId}`, {categoryName}, {
         headers: {Authorization: `Bearer ${getToken()}`}
       })
     },
