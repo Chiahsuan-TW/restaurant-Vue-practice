@@ -87,6 +87,9 @@
 </template>
 
 <script>
+import authorizationAPI from './../apis/authorization'
+import { Toast } from './../utils/helpers'
+
 export default {
   data() {
     return {
@@ -97,18 +100,24 @@ export default {
     }
   },
   methods: {
-      handleSignUp() {
-        console.log(this.password, this.passwordCheck)
-      if (this.password === this.passwordCheck) {
-        return JSON.stringify({
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          passwordCheck: this.passwordCheck
-        })
-      } else {
-        alert('password check failed, please key in again')
-      }
+      async handleSignUp(e) {
+        try{
+          
+          const response = await authorizationAPI.signUp({
+            name: this.name,
+            email: this.eamil,
+            password: this.password,
+            passwordCheck: this.passwordCheck
+          })
+          console.log(response)
+
+        } 
+        catch(error) {
+          Toast({
+            icon: 'error',
+            title: '請重新輸入'
+          })
+        }
     }
   }
 }

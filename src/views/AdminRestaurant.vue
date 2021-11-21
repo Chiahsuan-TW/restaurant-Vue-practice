@@ -10,7 +10,7 @@
       <div class="col-md-4">
         <img
           class="img-responsive center-block"
-          :src="restaurant.image | emptyImageFilter"
+          :src="restaurant.image "
           style="width: 250px;margin-bottom: 25px;"
         >
         <div class="well">
@@ -44,28 +44,9 @@
 </template>
 <script>
 import { emptyImageFilter } from './../utils/mixin'
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
-const dummyData = {
-  restaurant: {
-    id: 2,
-    name: 'Mrs. Mckenzie Johnston',
-    tel: '567-714-6131 x621',
-    address: '61371 Rosalinda Knoll',
-    opening_hours: '08:00',
-    description:
-      'Quia pariatur perferendis architecto tenetur omnis pariatur tempore.',
-    image: 'https://loremflickr.com/320/240/food,dessert,restaurant/?random=2',
-    createdAt: '2019-06-22T09:00:43.000Z',
-    updatedAt: '2019-06-22T09:00:43.000Z',
-    CategoryId: 3,
-    Category: {
-      id: 3,
-      name: '義大利料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    }
-  }
-}
 export default {
   name: 'AdminRestaurant',
   mixins: [emptyImageFilter],
@@ -87,10 +68,17 @@ export default {
     const { id: restaurantId } = this.$route.params
     this.fetchRestaurant(restaurantId)
   },
+  beforeRouteUpdate(to, from, next) {
+    const { id } = to.params
+    this.fetchRestaurant(id)
+    next()
+  },
   methods: {
-    fetchRestaurant(restaurantId) {
-      const { restaurant } = dummyData
-      this.restaurant = {
+    async fetchRestaurant(restaurantId) {
+      try {
+        const { data } = await adminAPI.restaurants.getDetail(restaurantId)
+        const { restaurant } = data
+        this.restaurant = {
         ...this.restaurant,
         id: restaurant.id,
         name: restaurant.name,
@@ -100,6 +88,12 @@ export default {
         tel: restaurant.tel,
         address: restaurant.address,
         description: restaurant.description
+      }
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          ttile: '無法載入餐廳資料，請稍候再試'
+        })
       }
     }
   }
