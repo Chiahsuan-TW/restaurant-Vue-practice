@@ -8,6 +8,21 @@ export default {
         headers: {Authorization: `Bearer ${getToken()}`}
       })
     },
+    delete(restaurantId) {
+      return apiHelper.delete(`/admin/categories/${restaurantId}`, {
+        headers: {Authorization: `Bearer ${getToken()}`}
+      })
+    },
+    create({name}) {
+      return apiHelper.post(`/admin/categories`, {name}, {
+        headers: {Authorization: `Bearer ${getToken()}`}
+      })
+    },
+    update({categoryId, name}) {
+      return apiHelper.put(`/admin/categories/${categoryId}`, {name}, {
+        headers: {Authorization: `Bearer ${getToken()}`}
+      })
+    },
   },
   restaurants: {
     create(formData) {

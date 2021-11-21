@@ -15,7 +15,7 @@
         </div>
         <div class="col-auto">
           <button
-            type="button"
+            type="submit"
             class="btn btn-primary"
           >
             新增
@@ -83,9 +83,9 @@
           </button>
           <button
             v-show="category.isEditing"
-            type="button"
+            type="submit"
             class="btn btn-link mr-2"
-            @click.stop.prevent="updateCategory({categoryId: category.id, categoryName: category.name})"
+            @click.stop.prevent="updateCategory({categoryId:category.id, name: category.name})"
           >
             Save
           </button>
@@ -105,37 +105,11 @@
 
 <script>
 import AdminNav from '@/components/AdminNav'
-import uuid from 'uuid/v4'
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
 //  2. 定義暫時使用的資料
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: '中式料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 2,
-      name: '日本料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 3,
-      name: '義大利料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 4,
-      name: '墨西哥料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    }
-  ]
-}
+
 
 export default {
   components: {
@@ -154,26 +128,66 @@ export default {
   },
   methods: {
     // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
-    fetchCategories () {
-      this.categories = dummyData.categories.map(category => 
+    async fetchCategories () {
+      try {
+        const { data } = await adminAPI.categories.get()
+        
+        this.categories = data.categories.map(category => 
         ({
           ...category,
           isEditing: false,
           nameCached: '',
         })
       )
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得餐廳類別，請稍後再試'
+        })
+      }
     },
-    createNewCategory() {
+    async createNewCategory() {
+      //  create不一定要用formData
+      try {
+        const { data } = await adminAPI.categories.create({name: this.newCategory})
+        
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
 
-      this.categories.push({
-        id: uuid(),
-        name: this.newCategory
+        this.categories.push({
+        id: data.categoryId,
+        name: this.newCategory,
+        isEditing: false
       })
+
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法新增餐廳資料，請稍後再試'
+        })
+      }
+
+      
 
       this.newCategory = ""
     },
-    deleteCategory(categoryId) {
-      this.categories = this.categories.filter(category => category.id !== categoryId)
+    async deleteCategory(categoryId) {
+      try {
+        const { data } = await adminAPI.categories.delete(categoryId)
+        console.log(data)
+        if(data.status !== "success") {
+          throw new Error(data.message)
+        }
+
+        this.categories = this.categories.filter(category => category.id !== categoryId)
+
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法刪除餐廳資料，請稍後再試'
+        })
+      }
     },
     toggleIsEditing(categoryId) {
       this.categories = this.categories.map(category => {
@@ -188,8 +202,19 @@ export default {
         }
       })
     },
-    updateCategory(categoryId, categoryName) {
+    async updateCategory({categoryId, name}) {
       //TODO: 更新資料
+      try {
+        const { data } = await adminAPI.categories.update({categoryId, name})
+        
+        console.log(data)
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法修改餐廳資料，請稍後再試'
+        })
+      }
+
       this.toggleIsEditing(categoryId)
     },
     handleCancel(categoryId) {
